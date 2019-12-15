@@ -6,6 +6,8 @@ const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const autoprefixer = require('autoprefixer');
+const TerserPlugin = require('terser-webpack-plugin');
+
 /*
   webpack sees every file as a module.
   How to handle those files is up to loaders.
@@ -42,9 +44,7 @@ const styles = {
 };
 
 // We can also use plugins - this one will compress the crap out of our JS
-const uglify = new webpack.optimize.UglifyJsPlugin({ // eslint-disable-line
-  compress: { warnings: false }
-});
+
 
 // OK - now it's time to put it all together
 const config = {
@@ -62,6 +62,10 @@ const config = {
     // we can use "substitutions" in file names like [name] and [hash]
     // name will be `App` because that is what we used above in our entry
     filename: '[name].bundle.js'
+    optimization: {
+      minimize: true,
+      minimizer: [new TerserPlugin()],
+    },
   },
 
   // remember we said webpack sees everthing as modules and how different loaders are responsible for different file types? Here is is where we implement them. Pass it the rules for our JS and our styles
