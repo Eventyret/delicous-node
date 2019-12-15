@@ -85,6 +85,7 @@ const config = {
     minimize: true,
     minimizer: [new TerserPlugin()]
   }
+  mode: process.env.NODE_ENV
 };
 // webpack is cranky about some packages using a soon to be deprecated API. shhhhhhh
 process.noDeprecation = true;
