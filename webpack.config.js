@@ -4,8 +4,7 @@
 
 const path = require("path");
 const webpack = require("webpack");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const autoprefixer = require("autoprefixer");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 
 /*
@@ -29,26 +28,33 @@ const javascript = {
   This is our postCSS loader which gets fed into the next loader. I'm setting it up in it's own variable because its a didgeridog
 */
 
-const postcss = {
-  loader: "postcss-loader",
-  options: {
-    plugins() {
-      return [autoprefixer({ browsers: "last 3 versions" })];
-    }
-  }
-};
-
 // this is our sass/css loader. It handles files that are require('something.scss')
 const styles = {
   test: /\.(scss)$/,
   // here we pass the options as query params b/c it's short.
   // remember above we used an object for each loader instead of just a string?
   // We don't just pass an array of loaders, we run them through the extract plugin so they can be outputted to their own .css file
-  use: ExtractTextPlugin.extract([
-    "css-loader?sourceMap",
-    postcss,
-    "sass-loader?sourceMap"
-  ])
+  use: [
+    MiniCssExtractPlugin.loader,
+    {
+      loader: "css-loader", // translates CSS into CommonJS
+      options: {
+        sourceMap: true
+      }
+    },
+    {
+      loader: "sass-loader", // compiles Sass to CSS
+      options: {
+        sourceMap: true,
+        sassOptions: {
+          includePaths: [
+            path.join(__dirname, "../node_modules"),
+            path.join(__dirname, "../public")
+          ]
+        }
+      }
+    }
+  ]
 };
 
 // We can also use plugins - this one will compress the crap out of our JS
@@ -73,19 +79,21 @@ const config = {
 
   // remember we said webpack sees everthing as modules and how different loaders are responsible for different file types? Here is is where we implement them. Pass it the rules for our JS and our styles
   module: {
-    rules: [javascript, styles],
+    rules: [javascript, styles]
   },
   // finally we pass it an array of our plugins - uncomment if you want to uglify
   // plugins: [uglify]
   plugins: [
     // here is where we tell it to output our css to a separate file
-    new ExtractTextPlugin("style.css")
+    new MiniCssExtractPlugin({
+      filename: "[name].[chunkhash].css"
+    })
   ],
   optimization: {
     minimize: true,
     minimizer: [new TerserPlugin()]
-  }
-  mode: process.env.NODE_ENV
+  },
+  mode: "development"
 };
 // webpack is cranky about some packages using a soon to be deprecated API. shhhhhhh
 process.noDeprecation = true;
