@@ -24,10 +24,6 @@ const javascript = {
   ]
 };
 
-/*
-  This is our postCSS loader which gets fed into the next loader. I'm setting it up in it's own variable because its a didgeridog
-*/
-
 // this is our sass/css loader. It handles files that are require('something.scss')
 const styles = {
   test: /\.(scss)$/,
