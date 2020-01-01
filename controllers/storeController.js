@@ -18,5 +18,6 @@ exports.createStore = async (req, res) => {
 };
 
 exports.getStores = async (req, res) => {
-  res.render("stores", { title: "Stores" });
+  const stores = await Store.find();
+  res.render("stores", { title: "Stores", stores });
 };
