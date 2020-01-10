@@ -1,5 +1,18 @@
 const mongoose = require("mongoose");
 const Store = mongoose.model("Store");
+const multer = require("multer");
+const multerOptions = {
+  storage: multer.memoryStorage(),
+  fileFilter(req, file, next) {
+    const isPhoto = file.mimetype.startsWidth("image/");
+    if (isPhoto) {
+      next(null, true);
+    } else {
+      next({ message: "That filetype is not allowed" }, false);
+    }
+  }
+};
+
 exports.homePage = (req, res) => {
   res.render("index");
 };
@@ -23,6 +36,7 @@ exports.getStores = async (req, res) => {
 };
 
 exports.editStore = async (req, res) => {
+  te;
   const store = await Store.findOne({ _id: req.params.id });
   res.render("editStore", { title: `Edit ${store.name}`, store });
 };
